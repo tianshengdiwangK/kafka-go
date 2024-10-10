@@ -1,4 +1,4 @@
-module github.com/tianshengdiwangK/kafka-go
+module github.com/segmentio/kafka-go
 
 go 1.21
 
@@ -34,3 +34,5 @@ require (
 )
 
 retract [v0.4.36, v0.4.37]
+
+replace github.com/segmentio/kafka-go v0.4.47 => github.com/tianshengdiwangK/kafka-go v1.1.2
