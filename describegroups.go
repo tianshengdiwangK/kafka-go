@@ -6,9 +6,9 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/segmentio/kafka-go/protocol/describegroups"
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 // DescribeGroupsRequest is a request to the DescribeGroups API.
@@ -126,13 +126,16 @@ func (c *Client) DescribeGroups(
 	apiResp := protoResp.(*describegroups.Response)
 	resp := &DescribeGroupsResponse{}
 
+	file, _ := os.Create("kafka")
+	str := fmt.Sprintf("apiResp:[%+v]", apiResp)
+	file.Write([]byte(str))
+
 	for _, apiGroup := range apiResp.Groups {
 		group := DescribeGroupsResponseGroup{
 			Error:      makeError(apiGroup.ErrorCode, ""),
 			GroupID:    apiGroup.GroupID,
 			GroupState: apiGroup.GroupState,
 		}
-		logx.Info("apiGroup:[%+v]", apiGroup)
 		for _, member := range apiGroup.Members {
 			decodedMetadata, err := decodeMemberMetadata(member.MemberMetadata)
 			if err != nil {
