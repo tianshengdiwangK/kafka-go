@@ -7,6 +7,7 @@ toolchain go1.22.5
 require (
 	github.com/klauspost/compress v1.17.9
 	github.com/pierrec/lz4/v4 v4.1.21
+	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.9.0
 	github.com/xdg-go/scram v1.1.2
 	golang.org/x/net v0.28.0

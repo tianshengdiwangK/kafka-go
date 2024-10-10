@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/pkg/errors"
 	"github.com/segmentio/kafka-go/protocol/describegroups"
 )
 
@@ -143,11 +144,11 @@ func (c *Client) DescribeGroups(
 		for _, member := range apiGroup.Members {
 			decodedMetadata, err := decodeMemberMetadata(member.MemberMetadata)
 			if err != nil {
-				return nil, err
+				return nil, errors.Wrapf(err, fmt.Sprintf("kafkaDebug:[%s]", str))
 			}
 			decodedAssignments, err := decodeMemberAssignments(member.MemberAssignment)
 			if err != nil {
-				return nil, err
+				return nil, errors.Wrapf(err, fmt.Sprintf("kafkaDebug:[%s]", str))
 			}
 
 			group.Members = append(group.Members, DescribeGroupsResponseMember{
