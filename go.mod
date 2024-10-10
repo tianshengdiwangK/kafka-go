@@ -1,4 +1,4 @@
-module github.com/segmentio/kafka-go
+module github.com/tianshengdiwangK/kafka-go
 
 go 1.21
 
