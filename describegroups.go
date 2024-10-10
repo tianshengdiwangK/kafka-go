@@ -8,6 +8,7 @@ import (
 	"net"
 
 	"github.com/segmentio/kafka-go/protocol/describegroups"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 // DescribeGroupsRequest is a request to the DescribeGroups API.
@@ -131,7 +132,7 @@ func (c *Client) DescribeGroups(
 			GroupID:    apiGroup.GroupID,
 			GroupState: apiGroup.GroupState,
 		}
-
+		logx.Info("apiGroup:[%+v]", apiGroup)
 		for _, member := range apiGroup.Members {
 			decodedMetadata, err := decodeMemberMetadata(member.MemberMetadata)
 			if err != nil {
