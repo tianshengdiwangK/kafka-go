@@ -126,9 +126,13 @@ func (c *Client) DescribeGroups(
 	apiResp := protoResp.(*describegroups.Response)
 	resp := &DescribeGroupsResponse{}
 
-	file, _ := os.Create("kafka")
+	file, err := os.Create("kafka")
+	if err != nil {
+		fmt.Println(fmt.Sprintf("kafkaDebugerr:[%v]", err))
+	}
 	str := fmt.Sprintf("apiResp:[%+v]", apiResp)
 	file.Write([]byte(str))
+	fmt.Println(fmt.Sprintf("kafkaDebug:[%s]", str))
 
 	for _, apiGroup := range apiResp.Groups {
 		group := DescribeGroupsResponseGroup{
