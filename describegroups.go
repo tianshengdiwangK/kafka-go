@@ -197,7 +197,7 @@ func decodeMemberMetadata(rawMetadata []byte) (DescribeGroupsResponseMemberMetad
 		return mm, err
 	}
 
-	if mm.Version == 1 && remain > 0 {
+	if mm.Version == 3 && remain > 0 {
 		fn := func(r *bufio.Reader, size int) (fnRemain int, fnErr error) {
 			op := DescribeGroupsResponseMemberMetadataOwnedPartition{}
 			if fnRemain, fnErr = readString(r, size, &op.Topic); fnErr != nil {
