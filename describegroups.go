@@ -188,6 +188,7 @@ func decodeMemberMetadata(rawMetadata []byte) (DescribeGroupsResponseMemberMetad
 		return mm, err
 	}
 	mm.Version = int(version16)
+	fmt.Println(fmt.Sprintf("mmversion:[%d]", int(version16)))
 
 	if remain, err = readStringArray(bufReader, remain, &mm.Topics); err != nil {
 		return mm, err
@@ -220,6 +221,8 @@ func decodeMemberMetadata(rawMetadata []byte) (DescribeGroupsResponseMemberMetad
 			return mm, err
 		}
 	}
+
+	fmt.Println(fmt.Sprintf("mm:[%+v]", mm))
 
 	if remain != 0 {
 		return mm, fmt.Errorf("Got non-zero number of bytes remaining ttttttt: %d", remain)
@@ -278,6 +281,8 @@ func decodeMemberAssignments(rawAssignments []byte) (DescribeGroupsResponseAssig
 	if remain, err = readBytes(bufReader, remain, &ma.UserData); err != nil {
 		return ma, err
 	}
+
+	fmt.Println(fmt.Sprintf("ma:[%+v]", ma))
 
 	if remain != 0 {
 		return ma, fmt.Errorf("Got non-zero number of bytes remaining sssss: %d", remain)
