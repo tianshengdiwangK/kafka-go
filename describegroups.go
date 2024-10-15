@@ -60,6 +60,7 @@ type DescribeGroupsResponseMember struct {
 }
 
 // GroupMemberMetadata stores metadata associated with a group member.
+// https://github.com/apache/kafka/blob/trunk/clients/src/main/resources/common/message/ConsumerProtocolSubscription.json
 type DescribeGroupsResponseMemberMetadata struct {
 	// Version is the version of the metadata.
 	Version int
@@ -73,6 +74,9 @@ type DescribeGroupsResponseMemberMetadata struct {
 	// OwnedPartitions contains the partitions owned by this group member; only set if
 	// consumers are using a cooperative rebalancing assignor protocol.
 	OwnedPartitions []DescribeGroupsResponseMemberMetadataOwnedPartition
+
+	GenerationID int32
+	RackID       string
 }
 
 type DescribeGroupsResponseMemberMetadataOwnedPartition struct {
@@ -187,7 +191,7 @@ func decodeMemberMetadata(rawMetadata []byte) (DescribeGroupsResponseMemberMetad
 		return mm, err
 	}
 
-	if mm.Version == 1 && remain > 0 {
+	if mm.Version >= 1 && remain > 0 {
 		fn := func(r *bufio.Reader, size int) (fnRemain int, fnErr error) {
 			op := DescribeGroupsResponseMemberMetadataOwnedPartition{}
 			if fnRemain, fnErr = readString(r, size, &op.Topic); fnErr != nil {
@@ -208,6 +212,18 @@ func decodeMemberMetadata(rawMetadata []byte) (DescribeGroupsResponseMemberMetad
 		}
 
 		if remain, err = readArrayWith(bufReader, remain, fn); err != nil {
+			return mm, err
+		}
+	}
+
+	if mm.Version >= 2 && remain > 0 {
+		if remain, err = readInt32(bufReader, remain, &mm.GenerationID); err != nil {
+			return mm, err
+		}
+	}
+
+	if mm.Version >= 3 && remain > 0 {
+		if remain, err = readString(bufReader, remain, &mm.RackID); err != nil {
 			return mm, err
 		}
 	}
