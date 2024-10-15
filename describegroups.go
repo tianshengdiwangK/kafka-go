@@ -75,6 +75,9 @@ type DescribeGroupsResponseMemberMetadata struct {
 	// OwnedPartitions contains the partitions owned by this group member; only set if
 	// consumers are using a cooperative rebalancing assignor protocol.
 	OwnedPartitions []DescribeGroupsResponseMemberMetadataOwnedPartition
+
+	GenerationID int32
+	RackID       string
 }
 
 type DescribeGroupsResponseMemberMetadataOwnedPartition struct {
@@ -197,7 +200,7 @@ func decodeMemberMetadata(rawMetadata []byte) (DescribeGroupsResponseMemberMetad
 		return mm, err
 	}
 
-	if mm.Version == 3 && remain > 0 {
+	if mm.Version == 1 && remain > 0 {
 		fn := func(r *bufio.Reader, size int) (fnRemain int, fnErr error) {
 			op := DescribeGroupsResponseMemberMetadataOwnedPartition{}
 			if fnRemain, fnErr = readString(r, size, &op.Topic); fnErr != nil {
@@ -222,10 +225,21 @@ func decodeMemberMetadata(rawMetadata []byte) (DescribeGroupsResponseMemberMetad
 		}
 	}
 
+	if mm.Version >= 2 && remain > 0 {
+		if remain, err = readInt32(bufReader, remain, &mm.GenerationID); err != nil {
+			return mm, err
+		}
+	}
+
+	if mm.Version >= 3 && remain > 0 {
+		if remain, err = readString(bufReader, remain, &mm.RackID); err != nil {
+			return mm, err
+		}
+	}
 	fmt.Println(fmt.Sprintf("mm:[%+v]", mm))
 
 	if remain != 0 {
-		return mm, fmt.Errorf("Got non-zero number of bytes remaining ttttttt: %d", remain)
+		return mm, fmt.Errorf("Got non-zero number of bytes remaining : %d", remain)
 	}
 
 	return mm, nil
